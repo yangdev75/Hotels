@@ -57,23 +57,39 @@ if "data" not in os.listdir():
 url = 'https://adresse.data.gouv.fr'
 root="/data/ban/adresses/latest/csv/"
 adresse_url = url+root
+
+if "addresses" not in os.listdir("data"):
+    os.mkdir("data/addresses")
+
+
 if controls.is_url_OK(hotel_url):
     response = requests.get(adresse_url)
     soup = bs(response.content, features="html.parser")
-    links = soup.find_all("a")
-    links = links[25:33]
-    for a in links:
-        filename = a["href"]
-        print(filename)
 
-        if (root in filename):
-            print("aaa")
-            link = url + filename
-            print(f"link: {link}")
-            # wget.download(link,out=f"data/addresses/")
-            last_update=a.find("span", attrs={'class': 'jsx-2832390685 explorer-link-date'}).text
-            last_update = datetime.datetime.strptime(last_update, "%d/%m/%Y")
-            print(last_update.date())
+    if not os.listdir("data/addresses"):
+        links = soup.find_all("a",attrs={'class': 'jsx-2832390685'})
+        
+        # links = links[25:33]
+        links = links[-5:]
+        for a in links:
+            filename = a["href"]
+            print(filename)
+
+            if (root in filename):
+                print("aaa")
+                link = url + filename
+                print(f"link: {link}")
+
+                # response = requests.head(link)
+                # print(response.headers)
+                # last_modified = response.headers.get('Last-Modified')
+                # print(last_modified)
+
+                if controls.is_gz_file_not_empty(link):
+                    wget.download(link,out=f"data/addresses/")
+                    last_update=a.find("span", attrs={'class': 'jsx-2832390685 explorer-link-date'}).text
+                    last_update = datetime.datetime.strptime(last_update, "%d/%m/%Y")
+                    print(last_update.date())
 
 else:
     print(f"can't access {hotel_url}")
