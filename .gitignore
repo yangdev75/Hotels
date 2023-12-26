@@ -1,4 +1,5 @@
 essai/
 data/
 venv/
-__pycachce__
+__pycache__
+__init__.py
