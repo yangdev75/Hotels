@@ -3,6 +3,9 @@ import datetime
 import shutil
 import gzip
 
+from bs4 import Tag
+
+
 def get_date_in_filename(folder: str):
     pass
     file_breakdown = os.listdir(folder)[0].split("_")
@@ -31,7 +34,11 @@ def delete_files_or_folder(folder: str) -> None:
     print(f"The folder {folder} is clean")
 
 
-def extract_gz_file(folder: str, file:str, link, french_addresses_path, lieux_dits_path) -> None:
+def extract_gz_file(source_folder: str,
+                    file:str,
+                    link: Tag,
+                    target_folder_1:str,
+                    target_folder_2:str) -> None:
     """This function
 
     Args:
@@ -42,7 +49,7 @@ def extract_gz_file(folder: str, file:str, link, french_addresses_path, lieux_di
     last_update = datetime.datetime.strptime(last_update, "%d/%m/%Y").date()
     print(f"\nlinks lastly updated on {last_update}\n")
 
-    with gzip.open(folder + file, 'rb') as f_in:
+    with gzip.open(source_folder + file, 'rb') as f_in:
         filename_without_ext = file.replace(".gz", "")
         brokenddown_filename_without_ext = filename_without_ext.split('.')
         print(brokenddown_filename_without_ext)
@@ -51,9 +58,9 @@ def extract_gz_file(folder: str, file:str, link, french_addresses_path, lieux_di
 
         # adresses and lieux-dits are stored in 2 folders
         if "adresses-" in file:
-                target_path = french_addresses_path
+                target_path = target_folder_1
         elif "lieux-dits-" in file:
-            target_path = lieux_dits_path
+            target_path = target_folder_2
 
         with open(target_path + filename_with_date, 'wb') as f_out:
             shutil.copyfileobj(f_in, f_out)

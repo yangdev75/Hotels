@@ -90,10 +90,10 @@ if controls.is_url_OK(hotel_url):
     soup = bs(response.content, features="html.parser")
     all_links = soup.find_all("a",attrs={'class': 'jsx-2832390685'})
 
-    all_links = all_links[:3]
-    # all_links = all_links[-5:]
+    # all_links = all_links[:3]
+    all_links = all_links[-5:]
 
-    if not os.listdir(french_addresses_path):
+    if not os.listdir(french_addresses_path): # if folder is empty
 
         for link in all_links:
             filename = link["href"]
@@ -118,17 +118,17 @@ if controls.is_url_OK(hotel_url):
         os.rmdir(gz_folder_path)
 
 
-    else:
+    else: # if folder is not empty : check whether the date of last update is more recent than the downloaded files
         print('get date file')
-        file_date = tools.get_date_in_filename(addresses_path)
+        file_date = tools.get_date_in_filename(french_addresses_path)
         
         filename = all_links[0]["href"]
         print(filename)
         last_update=all_links[0].find("span", attrs={'class': 'jsx-2832390685 explorer-link-date'}).text
-        last_update = datetime.datetime.strptime(last_update, "%d/%m/%Y")
-        print(last_update.date())
+        last_update = datetime.datetime.strptime(last_update, "%d/%m/%Y").date()
+        print(last_update)
 
-        if file_date >= last_update.date():
+        if file_date >= last_update:
             print("delete old files")
             tools.delete_files_or_folder(addresses_path)
             os.mkdir(french_addresses_path)
@@ -136,6 +136,26 @@ if controls.is_url_OK(hotel_url):
             os.mkdir(gz_folder_path)
 
             print("dl new files")
+
+            for link in all_links:
+                filename = link["href"]
+
+                if (root in filename):
+                    link_file = url + filename
+                    print(f"link: {link_file}")
+
+                    if controls.is_gz_file_not_empty(link_file):
+                        wget.download(link_file,out=gz_folder_path)
+                        brokendown_filename = filename.split('/')
+                        name = brokendown_filename[-1]
+                        tools.extract_gz_file(gz_folder_path,name,link,french_addresses_path, lieux_dits_path)
+                        print('delete gz file')
+                        file_path = os.path.join(gz_folder_path)
+                        tools.delete_files_or_folder(file_path)
+            
+            print('delete gz folder')
+            os.rmdir(gz_folder_path)
+
 
 
     # # print(response.headers)
