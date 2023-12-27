@@ -117,6 +117,13 @@ if controls.is_url_OK(hotel_url):
                             shutil.copyfileobj(f_in, f_out)
                             print(f"{filename_with_date} successfully created")
 
+                        # clean memory usage
+                        del f_in
+                        del f_out
+
+                        print('delete gz file')
+                        file_path = os.path.join("data/addresses",name)
+                        os.remove(file_path)
 
 else:
     print(f"can't access {hotel_url}")
