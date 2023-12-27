@@ -90,14 +90,13 @@ if controls.is_url_OK(hotel_url):
     soup = bs(response.content, features="html.parser")
     all_links = soup.find_all("a",attrs={'class': 'jsx-2832390685'})
 
-    # all_links = all_links[:3]
-    all_links = all_links[-5:]
+    all_links = all_links[:3]
+    # all_links = all_links[-5:]
 
     if not os.listdir(french_addresses_path):
 
         for link in all_links:
             filename = link["href"]
-            print(filename)
 
             if (root in filename):
                 link_file = url + filename
@@ -105,49 +104,23 @@ if controls.is_url_OK(hotel_url):
 
                 if controls.is_gz_file_not_empty(link_file):
                     wget.download(link_file,out=gz_folder_path)
-                    last_update=link.find("span", attrs={'class': 'jsx-2832390685 explorer-link-date'}).text
-                    last_update = datetime.datetime.strptime(last_update, "%d/%m/%Y")
-                    print(f"\nlinks lastly updated on {last_update.date()}\n")
 
                     brokendown_filename = filename.split('/')
                     name = brokendown_filename[-1]
+                  
+                    tools.extract_gz_file(gz_folder_path,name,link,french_addresses_path, lieux_dits_path)
 
-                    # we open .gz file to download .csv file
-                    with gzip.open(gz_folder_path + name, 'rb') as f_in:
-                        filename_without_ext = name.replace(".gz", "")
-                        brokenddown_filename_without_ext = filename_without_ext.split('.')
-                        print(brokenddown_filename_without_ext)
-                        filename_with_date = brokenddown_filename_without_ext[0] + "_" + last_update.date().strftime("%Y_%m_%d") +".csv"
-                        print(filename_with_date)
-
-                        # adresses and lieux-dits don't have same schema
-                        # to handle it easily, we separate into 2 folder
-                        # if "adresses" in filename:
-                        #     path = streets_path
-                        # elif "lieux-dits" in filename:
-                        #     path = places_path
-
-                        if "adresses-" in filename:
-                                target_path = french_addresses_path
-                        elif "lieux-dits-" in filename:
-                            target_path = lieux_dits_path
-
-                        with open(target_path + filename_with_date, 'wb') as f_out:
-                            shutil.copyfileobj(f_in, f_out)
-                            print(f"{filename_with_date} successfully created")
-
-                        # clean memory usage
-                        del f_in
-                        del f_out
-
-                        print('delete gz file')
-                        file_path = os.path.join(gz_folder_path)
-                        tools.delete_files_or_folder(file_path)
+                    print('delete gz file')
+                    file_path = os.path.join(gz_folder_path)
+                    tools.delete_files_or_folder(file_path)
+        
+        print('delete gz folder')
+        os.rmdir(gz_folder_path)
 
 
     else:
         print('get date file')
-        file_date = tools.get_date_in_filename(french_addresses_path)
+        file_date = tools.get_date_in_filename(addresses_path)
         
         filename = all_links[0]["href"]
         print(filename)
