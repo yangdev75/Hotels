@@ -1,4 +1,5 @@
-from utils import controls
+from utils import controls, tools
+
 
 import os
 import requests
@@ -124,6 +125,12 @@ if controls.is_url_OK(hotel_url):
                         print('delete gz file')
                         file_path = os.path.join("data/addresses",name)
                         os.remove(file_path)
+
+    else:
+        print('get date file')
+        tools.get_date_in_filename("data/addresses")
+
+
 
 else:
     print(f"can't access {hotel_url}")
