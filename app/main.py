@@ -51,7 +51,7 @@ if "hotels" not in os.listdir("data"):
 #         print(f"downloaded file dated from {filedate}")
 #         if last_update >= filedate:
 #             print('delete downloaded file')
-#             tools.remove_files(hotels_path)
+#             tools.delete_files_or_folder(hotels_path)
 #             links=soup.find_all("a", attrs={'title': 'Télécharger le fichier'})
 #             data_link = links[1]['href']
 #             print('DL new file')
@@ -74,15 +74,15 @@ addresses_path = "data/addresses"
 if "addresses" not in os.listdir("data"):
     os.mkdir(addresses_path)
 
-french_addresses = addresses_path + "/adresses_fr/"
-lieux_dits = addresses_path + "/lieux_dits/"
-gz_folder = addresses_path + "/gz_folder/"
+french_addresses_path = addresses_path + "/adresses_fr/"
+lieux_dits_path = addresses_path + "/lieux_dits/"
+gz_folder_path = addresses_path + "/gz_folder/"
 if "adresses_fr" not in os.listdir(addresses_path):
-    os.mkdir(french_addresses)
+    os.mkdir(french_addresses_path)
 if "lieux_dits" not in os.listdir(addresses_path):
-    os.mkdir(lieux_dits)
+    os.mkdir(lieux_dits_path)
 if "gz_folder" not in os.listdir(addresses_path):
-    os.mkdir(gz_folder)
+    os.mkdir(gz_folder_path)
 
 
 if controls.is_url_OK(hotel_url):
@@ -90,10 +90,10 @@ if controls.is_url_OK(hotel_url):
     soup = bs(response.content, features="html.parser")
     all_links = soup.find_all("a",attrs={'class': 'jsx-2832390685'})
 
-    all_links = all_links[25:33]
-    # all_links = all_links[-5:]
+    # all_links = all_links[:3]
+    all_links = all_links[-5:]
 
-    if not os.listdir(french_addresses):
+    if not os.listdir(french_addresses_path):
 
         for link in all_links:
             filename = link["href"]
@@ -104,7 +104,7 @@ if controls.is_url_OK(hotel_url):
                 print(f"link: {link_file}")
 
                 if controls.is_gz_file_not_empty(link_file):
-                    wget.download(link_file,out=gz_folder)
+                    wget.download(link_file,out=gz_folder_path)
                     last_update=link.find("span", attrs={'class': 'jsx-2832390685 explorer-link-date'}).text
                     last_update = datetime.datetime.strptime(last_update, "%d/%m/%Y")
                     print(f"\nlinks lastly updated on {last_update.date()}\n")
@@ -113,13 +113,12 @@ if controls.is_url_OK(hotel_url):
                     name = brokendown_filename[-1]
 
                     # we open .gz file to download .csv file
-                    with gzip.open(gz_folder + name, 'rb') as f_in:
+                    with gzip.open(gz_folder_path + name, 'rb') as f_in:
                         filename_without_ext = name.replace(".gz", "")
                         brokenddown_filename_without_ext = filename_without_ext.split('.')
                         print(brokenddown_filename_without_ext)
                         filename_with_date = brokenddown_filename_without_ext[0] + "_" + last_update.date().strftime("%Y_%m_%d") +".csv"
                         print(filename_with_date)
-
 
                         # adresses and lieux-dits don't have same schema
                         # to handle it easily, we separate into 2 folder
@@ -128,7 +127,12 @@ if controls.is_url_OK(hotel_url):
                         # elif "lieux-dits" in filename:
                         #     path = places_path
 
-                        with open(french_addresses + filename_with_date, 'wb') as f_out:
+                        if "adresses-" in filename:
+                                target_path = french_addresses_path
+                        elif "lieux-dits-" in filename:
+                            target_path = lieux_dits_path
+
+                        with open(target_path + filename_with_date, 'wb') as f_out:
                             shutil.copyfileobj(f_in, f_out)
                             print(f"{filename_with_date} successfully created")
 
@@ -137,13 +141,13 @@ if controls.is_url_OK(hotel_url):
                         del f_out
 
                         print('delete gz file')
-                        file_path = os.path.join(gz_folder)
-                        tools.remove_files(file_path)
+                        file_path = os.path.join(gz_folder_path)
+                        tools.delete_files_or_folder(file_path)
 
 
     else:
         print('get date file')
-        file_date = tools.get_date_in_filename("data/addresses")
+        file_date = tools.get_date_in_filename(french_addresses_path)
         
         filename = all_links[0]["href"]
         print(filename)
@@ -153,7 +157,10 @@ if controls.is_url_OK(hotel_url):
 
         if file_date >= last_update.date():
             print("delete old files")
-
+            tools.delete_files_or_folder(addresses_path)
+            os.mkdir(french_addresses_path)
+            os.mkdir(lieux_dits_path)
+            os.mkdir(gz_folder_path)
 
             print("dl new files")
 
