@@ -6,6 +6,8 @@ from bs4 import BeautifulSoup as bs
 import wget
 import datetime
 import locale
+import gzip
+import shutil
 
 import pprint
 
@@ -57,6 +59,7 @@ if "data" not in os.listdir():
 url = 'https://adresse.data.gouv.fr'
 root="/data/ban/adresses/latest/csv/"
 adresse_url = url+root
+# https://adresse.data.gouv.fr/data/ban/adresses/latest/csv/
 
 if "addresses" not in os.listdir("data"):
     os.mkdir("data/addresses")
@@ -69,8 +72,8 @@ if controls.is_url_OK(hotel_url):
     if not os.listdir("data/addresses"):
         links = soup.find_all("a",attrs={'class': 'jsx-2832390685'})
         
-        # links = links[25:33]
-        links = links[-5:]
+        links = links[25:33]
+        # links = links[-5:]
         for a in links:
             filename = a["href"]
             print(filename)
@@ -90,6 +93,30 @@ if controls.is_url_OK(hotel_url):
                     last_update=a.find("span", attrs={'class': 'jsx-2832390685 explorer-link-date'}).text
                     last_update = datetime.datetime.strptime(last_update, "%d/%m/%Y")
                     print(last_update.date())
+
+                    brokendown_filename = filename.split('/')
+                    name = brokendown_filename[-1]
+
+                    # we open .gz file to download .csv file
+                    with gzip.open("data/addresses/"+ name, 'rb') as f_in:
+                        filename_without_ext = name.replace(".gz", "")
+                        brokenddown_filename_without_ext = filename_without_ext.split('.')
+                        print(brokenddown_filename_without_ext)
+                        filename_with_date = brokenddown_filename_without_ext[0] + "_" + last_update.date().strftime("%Y_%m_%d") +".csv"
+                        print(filename_with_date)
+
+
+                        # adresses and lieux-dits don't have same schema
+                        # to handle it easily, we separate into 2 folder
+                        # if "adresses" in filename:
+                        #     path = streets_path
+                        # elif "lieux-dits" in filename:
+                        #     path = places_path
+
+                        with open("data/addresses/" + filename_with_date, 'wb') as f_out:
+                            shutil.copyfileobj(f_in, f_out)
+                            print(f"{filename_with_date} successfully created")
+
 
 else:
     print(f"can't access {hotel_url}")
