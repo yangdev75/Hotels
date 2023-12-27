@@ -69,12 +69,13 @@ if "addresses" not in os.listdir("data"):
 if controls.is_url_OK(hotel_url):
     response = requests.get(adresse_url)
     soup = bs(response.content, features="html.parser")
+    links = soup.find_all("a",attrs={'class': 'jsx-2832390685'})
+
+    links = links[25:33]
+    # links = links[-5:]
 
     if not os.listdir("data/addresses"):
-        links = soup.find_all("a",attrs={'class': 'jsx-2832390685'})
-        
-        links = links[25:33]
-        # links = links[-5:]
+
         for a in links:
             filename = a["href"]
             print(filename)
@@ -83,11 +84,6 @@ if controls.is_url_OK(hotel_url):
                 print("aaa")
                 link = url + filename
                 print(f"link: {link}")
-
-                # response = requests.head(link)
-                # print(response.headers)
-                # last_modified = response.headers.get('Last-Modified')
-                # print(last_modified)
 
                 if controls.is_gz_file_not_empty(link):
                     wget.download(link,out=f"data/addresses/")
@@ -128,7 +124,25 @@ if controls.is_url_OK(hotel_url):
 
     else:
         print('get date file')
-        tools.get_date_in_filename("data/addresses")
+        file_date = tools.get_date_in_filename("data/addresses")
+        
+        filename = links[0]["href"]
+        print(filename)
+        last_update=links[0].find("span", attrs={'class': 'jsx-2832390685 explorer-link-date'}).text
+        last_update = datetime.datetime.strptime(last_update, "%d/%m/%Y")
+        print(last_update.date())
+
+        if file_date >= last_update.date():
+            print("delete old files")
+
+
+            print("dl new files")
+
+
+    # # print(response.headers)
+    # last_modified = response.headers.get('Last-Modified')
+    # print(f"links lastly modified on {last_modified}")
+    # print(type(last_modified))
 
 
 
