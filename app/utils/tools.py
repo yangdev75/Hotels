@@ -2,6 +2,8 @@ import os
 import datetime
 import shutil
 import gzip
+import json
+
 
 from bs4 import Tag
 
@@ -69,3 +71,22 @@ def extract_gz_file(source_folder: str,
         # clean memory usage
         del f_in
         del f_out
+
+
+def get_data_schema(source: str) -> dict:
+    """This function get data schema from config file depends on source
+
+    Args:
+        source (str): source from config file
+
+    Returns:
+        dict: data schema
+    """
+    with open('config/data_schemas.json', 'r') as schema_file:
+        data_schema = json.load(schema_file)
+
+    schema = {
+        col_name: getattr(pl, dtype) for col_name, dtype in data_schema[source].items()
+    }
+
+    return schema

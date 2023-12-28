@@ -9,7 +9,9 @@ import datetime
 import locale
 import time
 import shutil
+import pandas as pd
 
+import json
 
 import csv
 
@@ -203,3 +205,28 @@ with open(hotels_path+"/"+filename) as csv_file:
     dict_from_csv = dict(list(csv_reader)[0])
     print (list(dict_from_csv.keys()))
     pass
+
+print("df type without dict type\n")
+
+hotels_df = pd.read_csv(hotels_path+"/"+filename, sep=";")
+pd.set_option('display.max_columns', None)
+# print(hotels_df)
+print(hotels_df.describe())
+print(hotels_df.dtypes)
+
+
+print("\ndf type with dict type\n")
+with open('app/config/data_schemas.json', 'r') as schema_file:
+    schema = json.load(schema_file)
+    aa= schema["hotels"]
+    print(type(aa))
+    print(aa)
+
+
+df_hotel = pd.read_csv(filepath_or_buffer=hotels_path+"/"+filename,
+                        sep=";",
+                        dtype=aa,
+                        na_values=["-", "non", "oui"])
+print(df_hotel.dtypes)
+
+

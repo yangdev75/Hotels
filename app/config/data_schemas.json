@@ -1,0 +1,21 @@
+{
+    "hotels": {
+        "DATE DE CLASSEMENT": "str",
+        "TYPOLOGIE ÉTABLISSEMENT":                             "str",
+        "CLASSEMENT":                                        "str",
+        "CATÉGORIE":                                        "str",
+        "MENTION (villages de vacances)":                   "str",
+        "NOM COMMERCIAL":                                "str",
+        "ADRESSE":                                          "str",
+        "CODE POSTAL":                                              "str",
+        "COMMUNE":                                       "str",
+        "SITE INTERNET":                                     "str",
+        "TYPE DE SÉJOUR":                                   "str",
+        "CAPACITÉ D'ACCUEIL (PERSONNES)":                   "Int64",
+        "NOMBRE DE CHAMBRES":                                   "Int64",
+        "NOMBRE D'EMPLACEMENTS":                                "Int64",
+        "NOMBRE D'UNITÉS D'HABITATION (résidences de tourisme)": "Int64",
+        "NOMBRE DE LOGEMENTS (villages de vacances)" :         "Int64",
+        "classement prorogé"                         :  "Int64"
+    }
+}
