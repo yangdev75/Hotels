@@ -10,6 +10,9 @@ import locale
 import time
 import shutil
 
+
+import csv
+
 import pprint
 
 locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8')
@@ -43,10 +46,11 @@ if controls.is_url_OK(hotel_url):
     # print (f"last update is {last_update} (datetime format)\n")
     filename = file_root_name + last_update.strftime("%Y_%m_%d") +".csv"
     
+    links=soup.find_all("a", attrs={'title': 'Télécharger le fichier'})
+    # print(links)
+    data_link = links[0]['href'] # the 1st element is the link we are looking for
+
     if not os.listdir(hotels_path): # if folder is empty
-        links=soup.find_all("a", attrs={'title': 'Télécharger le fichier'})
-        print (links[1]) # the 2nd element is the link we are looking for
-        data_link = links[1]['href']
         wget.download(data_link, out=f"{hotels_path}/{filename}")
         print(f"{filename} downloaded")
     else:  # if folder is not empty : check whether the date of last update is more recent than the downloaded file
@@ -58,8 +62,6 @@ if controls.is_url_OK(hotel_url):
             shutil.make_archive(save_old_hotel_path + "/save", 'tar', hotels_path)
             print('delete downloaded file')
             tools.delete_files_or_folder(hotels_path)
-            links=soup.find_all("a", attrs={'title': 'Télécharger le fichier'})
-            data_link = links[1]['href']
             print('DL new file')
             wget.download(data_link, out=f"{hotels_path}/{filename}")
             print("delete saved old files")
@@ -192,3 +194,12 @@ adresse_url = url+root
 
 # else:
 #     print(f"can't access {hotel_url}")
+
+
+# get colums from hotels.csv
+# ***********************************************
+with open(hotels_path+"/"+filename) as csv_file:
+    csv_reader = csv.DictReader(csv_file, delimiter = ';')
+    dict_from_csv = dict(list(csv_reader)[0])
+    print (list(dict_from_csv.keys()))
+    pass
