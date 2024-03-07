@@ -23,7 +23,15 @@ def clean_hotel(hotels_path):
 
 
     accommodations_type = "HÔTEL DE TOURISME"
-    df_hotel_clean = df_hotel[df_hotel["TYPOLOGIE ÉTABLISSEMENT"]==accommodations_type]
+    columns_to_removes=["MENTION (villages de vacances)",
+                        "CATÉGORIE",
+                        "NOMBRE DE LOGEMENTS (villages de vacances)",
+                        "TYPE DE SÉJOUR",
+                        "NOMBRE D'EMPLACEMENTS",
+                        "NOMBRE D'UNITES D'HABITATION (résidences de tourisme)",
+                        "classement prorogé"]
+
+    df_hotel_clean = df_hotel[df_hotel["TYPOLOGIE ÉTABLISSEMENT"]==accommodations_type].drop(columns=columns_to_removes)
 
     df_hotel_clean = df_hotel_clean.assign(CLASSEMENT=lambda x:x['CLASSEMENT'].str[:1])
 
@@ -32,7 +40,8 @@ def clean_hotel(hotels_path):
     print(f"dataframe length:{size}")
     pd.set_option('display.max_columns', None)
 
-    print(df_hotel_clean)
+    # print(df_hotel_clean)
+    print(df_hotel_clean.info())
 
 
     

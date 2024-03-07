@@ -16,12 +16,12 @@ locale.setlocale(locale.LC_ALL, 'fr_FR.UTF-8')
 
 
 hotels_path = "data/hotels"
-hotel_filename = extract.get_hotel_addresses(hotels_path)
+# hotel_filename = extract.get_hotel_addresses(hotels_path)
 
 
 
 addresses_path = "data/addresses"
-extract.get_addresses(addresses_path)
+# extract.get_addresses(addresses_path)
 
 
 # # get colums from hotels.csv
