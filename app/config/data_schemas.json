@@ -20,19 +20,19 @@
     },
 
     "places": {
-        "id":                           "Utf8",
-        "nom_lieu_dit":                 "Utf8",
-        "code_postal":                  "Utf8",
-        "code_insee":                   "Utf8",
-        "nom_commune":                  "Utf8",
-        "code_insee_ancienne_commune":  "Utf8",
-        "nom_ancienne_commune":         "Utf8",
+        "id":                           "str",
+        "nom_lieu_dit":                 "str",
+        "code_postal":                  "str",
+        "code_insee":                   "str",
+        "nom_commune":                  "str",
+        "code_insee_ancienne_commune":  "str",
+        "nom_ancienne_commune":         "str",
         "x":                            "Float64",
         "y":                            "Float64",
         "lon":                          "Float64",
         "lat":                          "Float64",
-        "source_position":              "Utf8",
-        "source_nom_voie":              "Utf8"
+        "source_position":              "str",
+        "source_nom_voie":              "str"
     }
 
 }

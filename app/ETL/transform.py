@@ -54,7 +54,13 @@ def clean_hotel(hotels_path):
     print(df_hotel_clean.info())
     # print(df_hotel_clean)
 
-
+def map_to_polars_dtype(dtype_str):
+    dtype_mapping = {
+        'str': pl.Utf8,
+        "Float64": pl.Float64,
+        # Add more mappings as needed
+    }
+    return dtype_mapping.get(dtype_str, pl.Utf8)
     
 def clean_addresses(addresses_path):
     with open('app/config/data_schemas.json', 'r') as schema_file:
@@ -62,13 +68,12 @@ def clean_addresses(addresses_path):
         dtype_addresses = schema["places"]
         print(dtype_addresses)
 
-        schema = {
-        col_name: getattr(pl, dtype) for col_name, dtype in schema["places"].items()
-        }
-        print("schema")
-        print(schema)
-        
+    print(dtype_addresses.items())
+    
 
+    dtype_addresses_pol = {col: map_to_polars_dtype(dtype_str) for col, dtype_str in dtype_addresses.items()}
+
+    print(dtype_addresses_pol)
     dir = os.listdir(addresses_path)
     print(dir)
 
@@ -76,29 +81,11 @@ def clean_addresses(addresses_path):
     addresses_filename = os.listdir(add_folder)[0]
     print(addresses_filename)
 
-    # df_adress = pl.scan_csv(add_folder + "/" + addresses_filename,
-    #                         separator=";",
-    #                         dtypes=schema)
+    df_adress = pl.scan_csv(add_folder + "/" + addresses_filename,
+                            separator=";",
+                            dtypes=dtype_addresses_pol)
 
-
-    # df_addresses = pd.read_csv(filepath_or_buffer=add_folder+"/"+addresses_filename,
-    #                         sep=";",
-    #                         na_values=["-", "non", "oui"])
-    # print(df_addresses.dtypes)
-    # df_adress = pl.scan_csv(add_folder+"/"+addresses_filename,
-    #                         separator=";", dtype=dtypes)
-    # df_adress = pl.scan_csv(add_folder+"/"+addresses_filename, separator=";")
-
-    # df_adress = pl.scan_csv(add_folder + "/" + addresses_filename, separator=";", infer_schema_length=10000)
-    # df_adress = pl.scan_csv(add_folder + "/" + addresses_filename, separator=";", ignore_errors=True)
-    # df_adress = df_adress.with_columns({'code_insee': pl.Utf8})
-    # df_adress = df_adress.with_columns('code_insee', df_adress['code_insee'].cast(pl.Utf8))
-
-    # df_adress = df_adress.with_columns([('code_insee', df_adress['code_insee'].cast(pl.Utf8))])
-
-    # df_adress = df_adress.select(df_adress['code_insee'].cast(pl.Utf8).alias('code_insee'))
-
-    # df_adress = df_adress.select(pl.col('code_insee').cast(pl.Utf8).alias('code_insee'))
-    
+   
     # df_adress = df_adress.collect()
     # print(len(df_adress))
+    print(df_adress.describe())
