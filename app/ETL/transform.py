@@ -57,3 +57,4 @@ def clean_hotel(hotels_path):
 
     
 def clean_addresses(hotels_path):
+    pass

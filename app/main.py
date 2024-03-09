@@ -21,7 +21,7 @@ hotels_path = "data/hotels"
 
 
 addresses_path = "data/addresses"
-# extract.get_addresses(addresses_path)
+extract.get_addresses(addresses_path)
 
 
 # # get colums from hotels.csv
@@ -57,4 +57,4 @@ addresses_path = "data/addresses"
 
 
 print("main")
-transform.clean_hotel(hotels_path)
+# transform.clean_hotel(hotels_path)

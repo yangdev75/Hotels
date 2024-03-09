@@ -106,13 +106,27 @@ def get_addresses(addresses_path: str) -> None:
         soup = bs(response.content, features="html.parser")
         all_links = soup.find_all("a",attrs={'class': 'jsx-2832390685'})
 
-        all_links = all_links[:3]
+        # all_links = all_links[:3]
+        # print(all_links)
         # all_links = all_links[-5:]
 
+        selected_links=[]
+
+        href_adresses = "/data/ban/adresses/latest/csv/adresses-france.csv.gz"
+        href_lieux_dits = "/data/ban/adresses/latest/csv/lieux-dits-beta-france.csv.gz"
+        
+        for link in all_links:
+            if href_adresses in link["href"] or href_lieux_dits in link["href"]:
+                selected_links.append(link)
+        
+        print(selected_links)
+
+        
         if not os.listdir(french_addresses_path): # if folder is empty
 
-            for link in all_links:
-                filename = link["href"]
+            for link in selected_links:
+                if href_adresses in link["href"]:
+                    filename = link["href"]
 
                 if (root in filename):
                     link_file = url + filename
@@ -145,7 +159,7 @@ def get_addresses(addresses_path: str) -> None:
             last_update = datetime.datetime.strptime(last_update, "%d/%m/%Y").date()
             print(last_update)
 
-            if last_update >= file_date:
+            if last_update > file_date:
                 print("save old files")
                 shutil.make_archive(save_old_addresses_path + "/save", 'tar', addresses_path)
                 
@@ -156,7 +170,7 @@ def get_addresses(addresses_path: str) -> None:
                 os.mkdir(gz_folder_path)
 
                 print("dl new files")
-                for link in all_links:
+                for link in selected_links:
                     filename = link["href"]
 
                     if (root in filename):
@@ -171,14 +185,19 @@ def get_addresses(addresses_path: str) -> None:
                             print('delete gz file')
                             file_path = os.path.join(gz_folder_path)
                             tools.delete_files_or_folder(file_path)
-                
+        
+                            print('delete gz folder')
+                            os.rmdir(gz_folder_path)
+                            print(f"extraction took {time.time() - start_time} s")
+        
+                            print("delete saved old files")
+                            tools.delete_files_or_folder(save_old_addresses_path)
+                            os.rmdir(save_old_addresses_path)
+
+            else:
                 print('delete gz folder')
                 os.rmdir(gz_folder_path)
-                print(f"extraction took {time.time() - start_time} s")
 
-                print("delete saved old files")
-                tools.delete_files_or_folder(save_old_addresses_path)
-                os.rmdir(save_old_addresses_path)
 
 
 
