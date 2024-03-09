@@ -17,5 +17,22 @@
         "NOMBRE D'UNITÉS D'HABITATION (résidences de tourisme)": "Int64",
         "NOMBRE DE LOGEMENTS (villages de vacances)" :         "Int64",
         "classement prorogé"                         :  "Int64"
+    },
+
+    "places": {
+        "id":                           "Utf8",
+        "nom_lieu_dit":                 "Utf8",
+        "code_postal":                  "Utf8",
+        "code_insee":                   "Utf8",
+        "nom_commune":                  "Utf8",
+        "code_insee_ancienne_commune":  "Utf8",
+        "nom_ancienne_commune":         "Utf8",
+        "x":                            "Float64",
+        "y":                            "Float64",
+        "lon":                          "Float64",
+        "lat":                          "Float64",
+        "source_position":              "Utf8",
+        "source_nom_voie":              "Utf8"
     }
+
 }
