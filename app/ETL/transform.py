@@ -1,4 +1,5 @@
 import pandas as pd
+import polars as pl
 import json
 import os
 
@@ -57,20 +58,37 @@ def clean_hotel(hotels_path):
 
     
 def clean_addresses(addresses_path):
-    with open('app/config/data_schemas.json', 'r') as schema_file:
-        schema = json.load(schema_file)
-        dtype_hotel = schema["hotels"]
-        print(type(dtype_hotel))
-        print(dtype_hotel)
+    # with open('app/config/data_schemas.json', 'r') as schema_file:
+    #     schema = json.load(schema_file)
+    #     dtype_hotel = schema["hotels"]
+    #     print(type(dtype_hotel))
+    #     print(dtype_hotel)
 
     dir = os.listdir(addresses_path)
     print(dir)
 
-    add_folder = os.path.join(addresses_path, dir[1])
+    add_folder = os.path.join(addresses_path, dir[0])
     addresses_filename = os.listdir(add_folder)[0]
     print(addresses_filename)
 
-    df_addresses = pd.read_csv(filepath_or_buffer=add_folder+"/"+addresses_filename,
-                            sep=";",
-                            na_values=["-", "non", "oui"])
-    print(df_addresses.dtypes)
+    # df_addresses = pd.read_csv(filepath_or_buffer=add_folder+"/"+addresses_filename,
+    #                         sep=";",
+    #                         na_values=["-", "non", "oui"])
+    # print(df_addresses.dtypes)
+    # df_adress = pl.scan_csv(add_folder+"/"+addresses_filename,
+    #                         separator=";", dtype=dtypes)
+    # df_adress = pl.scan_csv(add_folder+"/"+addresses_filename, separator=";")
+
+    # df_adress = pl.scan_csv(add_folder + "/" + addresses_filename, separator=";", infer_schema_length=10000)
+    df_adress = pl.scan_csv(add_folder + "/" + addresses_filename, separator=";", ignore_errors=True)
+    # df_adress = df_adress.with_columns({'code_insee': pl.Utf8})
+    # df_adress = df_adress.with_columns('code_insee', df_adress['code_insee'].cast(pl.Utf8))
+
+    # df_adress = df_adress.with_columns([('code_insee', df_adress['code_insee'].cast(pl.Utf8))])
+
+    # df_adress = df_adress.select(df_adress['code_insee'].cast(pl.Utf8).alias('code_insee'))
+
+    df_adress = df_adress.select(pl.col('code_insee').cast(pl.Utf8).alias('code_insee'))
+    
+    df_adress = df_adress.collect()
+    print(len(df_adress))
