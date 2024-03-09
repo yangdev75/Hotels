@@ -21,7 +21,6 @@ def clean_hotel(hotels_path):
     size=len(df_hotel)
     print(f"dataframe length:{size}")
 
-
     accommodations_type = "HÔTEL DE TOURISME"
     columns_to_removes=["MENTION (villages de vacances)",
                         "CATÉGORIE",
@@ -33,7 +32,18 @@ def clean_hotel(hotels_path):
 
     df_hotel_clean = df_hotel[df_hotel["TYPOLOGIE ÉTABLISSEMENT"]==accommodations_type].drop(columns=columns_to_removes)
 
+
     df_hotel_clean = df_hotel_clean.assign(CLASSEMENT=lambda x:x['CLASSEMENT'].str[:1])
+
+
+    df_hotel_clean["DATE DE CLASSEMENT"]=pd.to_datetime(df_hotel_clean["DATE DE CLASSEMENT"], format="%d/%m/%Y")
+    df_hotel_clean['CLASSEMENT'] = df_hotel_clean['CLASSEMENT'].str.replace('étoiles','stars')
+
+    df_hotel_clean = df_hotel_clean.assign(
+        YEAR=df_hotel_clean['DATE DE CLASSEMENT'].dt.year,
+        MONTH=df_hotel_clean['DATE DE CLASSEMENT'].dt.month,
+        DAY=df_hotel_clean['DATE DE CLASSEMENT'].dt.day
+        )
 
 
     size=len(df_hotel_clean)
@@ -42,6 +52,8 @@ def clean_hotel(hotels_path):
 
     # print(df_hotel_clean)
     print(df_hotel_clean.info())
+    # print(df_hotel_clean)
 
 
     
+def clean_addresses(hotels_path):

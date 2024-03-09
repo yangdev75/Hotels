@@ -1,6 +1,6 @@
 {
     "hotels": {
-        "DATE DE CLASSEMENT": "str",
+        "DATE OF CLASSEMENT": "str",
         "TYPOLOGIE ÉTABLISSEMENT":                             "str",
         "CLASSEMENT":                                        "str",
         "CATÉGORIE":                                        "str",
