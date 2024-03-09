@@ -58,3 +58,4 @@ extract.get_addresses(addresses_path)
 
 print("main")
 # transform.clean_hotel(hotels_path)
+transform.clean_addresses(addresses_path)

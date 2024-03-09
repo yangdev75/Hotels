@@ -56,5 +56,21 @@ def clean_hotel(hotels_path):
 
 
     
-def clean_addresses(hotels_path):
-    pass
+def clean_addresses(addresses_path):
+    with open('app/config/data_schemas.json', 'r') as schema_file:
+        schema = json.load(schema_file)
+        dtype_hotel = schema["hotels"]
+        print(type(dtype_hotel))
+        print(dtype_hotel)
+
+    dir = os.listdir(addresses_path)
+    print(dir)
+
+    add_folder = os.path.join(addresses_path, dir[1])
+    addresses_filename = os.listdir(add_folder)[0]
+    print(addresses_filename)
+
+    df_addresses = pd.read_csv(filepath_or_buffer=add_folder+"/"+addresses_filename,
+                            sep=";",
+                            na_values=["-", "non", "oui"])
+    print(df_addresses.dtypes)
